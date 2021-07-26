@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <FreeRTOS.h>
-#include <tasks.h>
+#include <task.h>
 
 /* USER CODE END Includes */
 
