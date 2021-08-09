@@ -1788,3 +1788,7 @@
 2021-07-27 01:57:30,869 [INFO] ApiDbMcu:458 - Load IP Config File for PDM2PCM
 2021-07-27 01:57:30,897 [INFO] LogOutputStream:76 - [STDOUT_REDIRECT] toolchainItems.length=====1
 2021-07-27 01:57:31,026 [INFO] OpenFileManager:323 - Restore cursor
+2021-08-09 12:07:29,259 [INFO] Activator:170 - 
+
+
+2021-08-09 12:07:29,259 [INFO] Activator:171 - !SESSION log4j initialized
