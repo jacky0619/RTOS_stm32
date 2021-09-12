@@ -1,13 +1,10 @@
-15:03:56 **** Incremental Build of configuration Debug for project 001Tasks ****
+16:14:21 **** Incremental Build of configuration Debug for project 001Tasks ****
 make -j12 all 
-arm-none-eabi-gcc -o "001Tasks.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\STM32\RTOS\RTOS_workspace\001Tasks\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="001Tasks.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 001Tasks.elf
- 
 arm-none-eabi-size   001Tasks.elf 
    text	   data	    bss	    dec	    hex	filename
-  29328	    128	 110248	 139704	  221b8	001Tasks.elf
+  33300	    136	 110320	 143756	  2318c	001Tasks.elf
 Finished building: default.size.stdout
  
 
-15:03:56 Build Finished. 0 errors, 0 warnings. (took 529ms)
+16:14:21 Build Finished. 0 errors, 0 warnings. (took 416ms)
 

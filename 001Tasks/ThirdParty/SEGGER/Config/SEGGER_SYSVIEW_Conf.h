@@ -1,3 +1,4 @@
+
 /*********************************************************************
 *                    SEGGER Microcontroller GmbH                     *
 *                        The Embedded Experts                        *
@@ -46,12 +47,10 @@
 *                                                                    *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
-
 File    : SEGGER_SYSVIEW_Conf.h
 Purpose : SEGGER SystemView configuration file.
           Set defines which deviate from the defaults (see SEGGER_SYSVIEW_ConfDefaults.h) here.          
 Revision: $Rev: 21292 $
-
 Additional information:
   Required defines which must be set are:
     SEGGER_SYSVIEW_GET_TIMESTAMP
@@ -78,6 +77,12 @@ Additional information:
 * TODO: Add your defines here.                                       *
 **********************************************************************
 */
+#define SEGGER_UART_REC 1
+
+#if (SEGGER_UART_REC == 1)
+	extern void HIF_UART_EnableTXEInterrupt  (void);
+	#define SEGGER_SYSVIEW_ON_EVENT_RECORDED(x)  HIF_UART_EnableTXEInterrupt()
+#endif
 
 
 #endif  // SEGGER_SYSVIEW_CONF_H
