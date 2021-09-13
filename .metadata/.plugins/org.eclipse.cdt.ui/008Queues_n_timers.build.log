@@ -1,4 +1,4 @@
-12:21:35 **** Build of configuration Debug for project 008Queues_n_timers ****
+17:44:06 **** Incremental Build of configuration Debug for project 008Queues_n_timers ****
 make -j12 all 
 arm-none-eabi-size   008Queues_n_timers.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size   008Queues_n_timers.elf
 Finished building: default.size.stdout
  
 
-12:21:36 Build Finished. 0 errors, 0 warnings. (took 703ms)
+17:44:07 Build Finished. 0 errors, 0 warnings. (took 346ms)
 

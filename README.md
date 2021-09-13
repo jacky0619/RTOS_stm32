@@ -20,20 +20,22 @@ Real Time Operation System with STM32F4
 [Udemy link](https://www.udemy.com/course/mastering-rtos-hands-on-with-freertos-arduino-and-stm32fx/)
 
 ## What I learned in this tutorial
-|#  | Features                 |link                           |
+|#  | Features                 |link                                |
 |---|:-------------------------|:-----------------------------------|
 |1  | Real Time Operation Sys  |[RTOS](#RTOS)                       |
 |2  | FreeRTOS                 |[FreeRTOS](#FreeRTOS)               |
 |3  | Task Priorities          |[Priorities](#Task_Priorities)      |
-|4  | Exercise 1               |[Ex1](#Exercise_1)                  |
-|5  | Scheduler                |[Scheduler](#Scheduler)             |
+|4  | Scheduler                |[Scheduler](#Scheduler)             |
+|5  | Exercise 1               |[Ex1](#Exercise_1)                  |
 |6  | Segger Systemview        |[Segger](#Segger_Systemview)        |
-|7  | Context Switch           |[Context Switch ](#Context_Switch ) |
-|8  | Task states              |[Task states](#Task_states)         |
-|9  | Task delay APIs          |[delay](#Task_delay_APIs)           |
-|10 | FreeRTOS Notifications   |[Notify](#FreeRTOS_Notifications)   |
-|11 | Hook functions           |[Hook](#Hook_functions )       |
-|12 | Queue management         |[Queue](#Queue_management)          |
+|7  | Exercise 2               |[Ex2](#Exercise_2)                  |
+|8  | Context Switch           |[Context Switch ](#Context_Switch ) |
+|9  | Task states              |[Task states](#Task_states)         |
+|10 | Task delay APIs          |[delay](#Task_delay_APIs)           |
+|11 | FreeRTOS Notifications   |[Notify](#FreeRTOS_Notifications)   |
+|12 | Hook functions           |[Hook](#Hook_functions )            |
+|13 | Queue management         |[Queue](#Queue_management)          |
+|14 | Exercise 3               |[Ex3](#Exercise_3)                  |
 
 
 ## RTOS
@@ -161,6 +163,82 @@ static void task2_handler(void* parameters){
 * We can trace various events with **runtime window, cpu load window, time line window** ,etc as the following image.
 ![](https://i.imgur.com/2uFbLCu.png)
 
+
+## Exercise_2
+We can test the 2 tasks application as I mentioned above with Segger Systemview.
+* Because I am using STM32F407 DISC-1, I need FT232RL USB to UART TTL Serial Adapter.
+![](https://i.imgur.com/TkvXOCp.jpg)
+* Connections 
+![](https://i.imgur.com/GPTAUyx.png)  
+<br>
+![](https://i.imgur.com/itNCCaY.png)
+* If you don't have this port you should download the driver of USB dongle. 
+![](https://i.imgur.com/vhYxE5Z.png)
+* Then run the application
+``` C=115
+/* USER CODE BEGIN 4 */
+
+static void task1_handler(void* parameters)
+{
+    /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART2_UART_Init();
+  /* USER CODE BEGIN 2 */
+
+
+  //Enable the CYCCNT counter.
+  DWT_CTRL |= ( 1 << 0);
+
+  SEGGER_UART_init(250000);//500000
+
+  SEGGER_SYSVIEW_Conf();
+
+ // SEGGER_SYSVIEW_Start();
+
+  status = xTaskCreate(task1_handler, "Task-1", 200, "Hello world from Task-1", 2, &task1_handle);
+
+  configASSERT(status == pdPASS);
+
+  status = xTaskCreate(task2_handler, "Task-2", 200, "Hello world from Task-2", 2, &task2_handle);
+
+  configASSERT(status == pdPASS);
+
+  //start the freeRTOS scheduler
+  vTaskStartScheduler();
+	char msg[100];
+
+	while(1)
+	{
+		snprintf(msg,100,"%s\n", (char*)parameters);
+		SEGGER_SYSVIEW_PrintfTarget(msg);
+		taskYIELD();
+	}
+
+}
+
+
+static void task2_handler(void* parameters)
+{
+	char msg[100];
+	while(1)
+	{
+		snprintf(msg,100,"%s\n", (char*)parameters);
+		SEGGER_SYSVIEW_PrintfTarget(msg);
+		taskYIELD();
+	}
+
+}
+```
+* We can see **Task-1 and Task-2 messages** in context window.
+* And the **Systick** calls **ISR events** intermediately. 
+![](https://i.imgur.com/rLP0veC.png)
+* Contexts window shows that the **CPU Load is actually low** because most of the time **CPU is idle**.  
+![](https://i.imgur.com/62uYf9y.png)
+* In Timeline window, we can see each event with actual runtime. 
+![](https://i.imgur.com/uaMXzAJ.png)
+
+
+
 ## Context_Switch
 * The **context switching** is a process of **switching out of one task** and **switching in another task** on　the CPU to execute．
 * In **FreeRTOS** Context Switching is taken care by the **PendSV Handler found in port.c**. 
@@ -263,16 +341,266 @@ BaseType_t xTaskNotifyWaitIndexed( UBaseType_t uxIndexToWaitOn,
     * Second argument is **uxItemSize** which is actually in bytes, that is number of **bytes occupied by each item** of the queue.
     * Queue then **returns** a reference to that created queue that be call as **QueueHandle**. 
 * **Send** data to queue
+    * If the **queue is full** then this API will immediately **return saying that queue is full**.
 ``` C=
 BaseType_t xQueueSendToFront( QueueHandle_t xQueue,
                               const void * pvItemToQueue,
                               TickType_t xTicksToWait );
 ```
 * **Receive** data to queue 
+    * Receive an item from a queue. The item is received by copy so a buffer of adequate size must be provided.
 ``` C=
 BaseType_t xQueueReceive( QueueHandle_t xQueue,
                           void *pvBuffer,
                           TickType_t xTicksToWait);
 ```
-## Exercise_2
-* Tera term
+* **Receive** an item from a queue **without removing the item** from the queue.
+```C=
+BaseType_t xQueuePeek( QueueHandle_t xQueue,
+                       void *pvBuffer,
+                       TickType_t xTicksToWait);
+```
+## Exercise_3
+*  Use **Tera Term** software to send command over **UART**.
+![](https://i.imgur.com/FXEziB7.jpg)
+[download link](https://zh-tw.osdn.net/projects/ttssh2/downloads/53081/teraterm-4.71.exe/)
+* **Tera term settings**
+    * Choose **USB serial port**
+    ![](https://i.imgur.com/kvrVuIE.png)
+    * Remember to check the Local echo
+    ![](https://i.imgur.com/Ve8Ctbr.png)
+    * Set the baud rate to 115200
+    ![](https://i.imgur.com/JP6uds1.png)
+* Code implementation
+ 
+* Menu Task
+``` C=
+void menu_task(void *param)
+{
+	uint32_t cmd_addr;
+
+	command_t *cmd;
+
+	int option;
+
+	const char* msg_menu = "\n========================\n"
+							"|         Menu         |\n"
+							"========================\n"
+								"LED effect    ----> 0\n"
+								"Date and time ----> 1\n"
+								"Exit          ----> 2\n"
+								"Enter your choice here : ";
+
+	while(1){
+		xQueueSend(q_print,&msg_menu,portMAX_DELAY);
+
+		//wait for menu commands
+		xTaskNotifyWait(0,0,&cmd_addr,portMAX_DELAY);
+		cmd = (command_t*)cmd_addr;
+
+		if(cmd->len == 1)
+		{
+			option = cmd->payload[0] - 48;
+			switch(option)
+			{
+				case 0:
+					curr_state = sLedEffect;
+					xTaskNotify(handle_led_task,0,eNoAction);
+					break;
+				case 1:
+					curr_state = sRtcMenu;
+					xTaskNotify(handle_rtc_task,0,eNoAction);
+					break;
+				case 2: /*implement exit */
+					break;
+				default:
+					xQueueSend(q_print,&msg_inv,portMAX_DELAY);
+					continue;
+			}
+
+		}else{
+			//invalid entry
+			xQueueSend(q_print,&msg_inv,portMAX_DELAY);
+			continue;
+		}
+
+
+		//wait to run again when some other task notifies
+		xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
+
+	}//while super loop
+}
+```
+* led task
+``` C=
+void led_task(void *param)
+{
+	uint32_t cmd_addr;
+	command_t *cmd;
+	const char* msg_led = "========================\n"
+						  "|      LED Effect     |\n"
+						  "========================\n"
+						  "(none,e1,e2,e3,e4)\n"
+						  "Enter your choice here : ";
+
+	while(1){
+		/*Wait for notification (Notify wait) */
+		xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
+
+		/*Print LED menu */
+		xQueueSend(q_print,&msg_led,portMAX_DELAY);
+
+		/*wait for LED command (Notify wait) */
+		xTaskNotifyWait(0,0,&cmd_addr,portMAX_DELAY);
+		cmd = (command_t*)cmd_addr;
+
+		if(cmd->len <= 4)
+		{
+			if(! strcmp((char*)cmd->payload,"none"))
+				led_effect_stop();
+			else if (! strcmp((char*)cmd->payload,"e1"))
+				led_effect(1);
+			else if (! strcmp((char*)cmd->payload,"e2"))
+				led_effect(2);
+			else if (! strcmp((char*)cmd->payload,"e3"))
+				led_effect(3);
+			else if (! strcmp((char*)cmd->payload,"e4"))
+				led_effect(4);
+			else
+				xQueueSend(q_print,&msg_inv,portMAX_DELAY); /*print invalid message */
+		}else
+			xQueueSend(q_print,&msg_inv,portMAX_DELAY);
+
+		/* update state variable */
+		curr_state = sMainMenu;
+
+		/*Notify menu task */
+		xTaskNotify(handle_menu_task,0,eNoAction);
+
+	}
+}
+```
+* print task
+``` C=
+void print_task(void *param)
+{
+
+	uint32_t *msg;
+	while(1){
+		xQueueReceive(q_print, &msg, portMAX_DELAY);
+		HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen((char*)msg),HAL_MAX_DELAY);
+	}
+}
+
+```
+* cmd handler task
+``` C=
+void cmd_handler_task(void *param)
+{
+	BaseType_t ret;
+	command_t cmd;
+
+	while(1){
+		/*Implement notify wait */
+		ret = xTaskNotifyWait(0,0,NULL,portMAX_DELAY);
+
+		if(ret == pdTRUE){
+			/*process the user data(command) stored in input data queue */
+			process_command(&cmd);
+		}
+
+	}
+
+}
+
+```
+* process command
+``` C= 
+void process_command(command_t *cmd)
+{
+	extract_command(cmd);
+
+	switch(curr_state)
+	{
+		case sMainMenu:
+			xTaskNotify(handle_menu_task,(uint32_t)cmd , eSetValueWithOverwrite);
+		break;
+
+		case sLedEffect:
+			xTaskNotify(handle_led_task,(uint32_t)cmd , eSetValueWithOverwrite);
+		break;
+
+		case sRtcMenu:
+		case sRtcTimeConfig:
+		case sRtcDateConfig:
+		case sRtcReport:
+			xTaskNotify(handle_rtc_task,(uint32_t)cmd , eSetValueWithOverwrite);
+		break;
+
+	}
+
+}
+```
+* extract command
+``` C= 
+int extract_command(command_t *cmd)
+{
+	uint8_t item;
+	BaseType_t  status;
+
+	status = uxQueueMessagesWaiting(q_data );
+	if(!status) return -1;
+	uint8_t i =0;
+
+	do
+	{
+		status = xQueueReceive(q_data,&item,0);
+		if(status == pdTRUE) cmd->payload[i++] = item;
+	}while(item != '\n');
+
+	cmd->payload[i-1] = '\0';
+	cmd->len = i-1; /*save  length of the command excluding null char */
+
+	return 0;
+}
+
+```
+* Deal with the receive messages
+``` C=
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	uint8_t dummy;
+
+	for(uint32_t i = 0 ; i < 4000 ; i++);
+
+	if(! xQueueIsQueueFullFromISR(q_data))
+	{
+		/*Enqueue data byte */
+		xQueueSendFromISR(q_data , (void*)&user_data , NULL);
+	}else{
+		if(user_data == '\n')
+		{
+			/*Make sure that last data byte of the queue is '\n' */
+			xQueueReceiveFromISR(q_data,(void*)&dummy,NULL);
+			xQueueSendFromISR(q_data ,(void*)&user_data , NULL);
+		}
+	}
+
+	/*Send notification to command handling task if user_data = '\n' */
+	if( user_data == '\n' ){
+		/*send notification to command handling task */
+		xTaskNotifyFromISR (handle_cmd_task,0,eNoAction,NULL);
+	}
+
+	/* Enable UART data byte reception again in IT mode */
+	 HAL_UART_Receive_IT(&huart2, (uint8_t*)&user_data, 1);
+
+
+}
+```
+* We can see the menu which we create in Tera term.
+![](https://i.imgur.com/zNseJhc.png)
+
+
+
+ 

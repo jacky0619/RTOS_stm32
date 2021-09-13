@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?scdStore version="2"?><scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
+        
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1083757639;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1083757639.736161000;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1877436456.408990319;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1252690342">
+                
         <collector id="org.eclipse.cdt.make.core.PerProjectSICollector">
             <includePath path="C:/Program Files/mingw-w64/x86_64-8.1.0-win32-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
             <includePath path="C:/Program Files/mingw-w64/x86_64-8.1.0-win32-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
@@ -364,5 +366,7 @@
             <definedSymbol symbol="__declspec(x)=__attribute__((x))"/>
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
         </collector>
+            
     </instance>
+    
 </scannerInfo>
