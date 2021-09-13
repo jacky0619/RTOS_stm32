@@ -165,7 +165,7 @@ static void task2_handler(void* parameters){
 
 
 ## Exercise_2
-We can test the 2 tasks application as I mentioned above with Segger Systemview.
+* We can test the 2 tasks application as I mentioned above with Segger Systemview.
 * Because I am using STM32F407 DISC-1, I need FT232RL USB to UART TTL Serial Adapter.  
 ![](https://i.imgur.com/TkvXOCp.jpg)  
 * Connections   
@@ -175,7 +175,58 @@ We can test the 2 tasks application as I mentioned above with Segger Systemview.
 * If you don't have this port you should download the driver of USB dongle.  
 ![](https://i.imgur.com/vhYxE5Z.png)  
 * Then run the application  
-* iiiiiiiiiii
+```C=115
+static void task1_handler(void* parameters)
+{
+    /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART2_UART_Init();
+  /* USER CODE BEGIN 2 */
+
+
+  //Enable the CYCCNT counter.
+  DWT_CTRL |= ( 1 << 0);
+
+  SEGGER_UART_init(250000);//500000
+
+  SEGGER_SYSVIEW_Conf();
+
+ // SEGGER_SYSVIEW_Start();
+
+  status = xTaskCreate(task1_handler, "Task-1", 200, "Hello world from Task-1", 2, &task1_handle);
+
+  configASSERT(status == pdPASS);
+
+  status = xTaskCreate(task2_handler, "Task-2", 200, "Hello world from Task-2", 2, &task2_handle);
+
+  configASSERT(status == pdPASS);
+
+  //start the freeRTOS scheduler
+  vTaskStartScheduler();
+	char msg[100];
+
+	while(1)
+	{
+		snprintf(msg,100,"%s\n", (char*)parameters);
+		SEGGER_SYSVIEW_PrintfTarget(msg);
+		taskYIELD();
+	}
+
+}
+
+
+static void task2_handler(void* parameters)
+{
+	char msg[100];
+	while(1)
+	{
+		snprintf(msg,100,"%s\n", (char*)parameters);
+		SEGGER_SYSVIEW_PrintfTarget(msg);
+		taskYIELD();
+	}
+
+}
+```
 
 * We can see **Task-1 and Task-2 messages** in context window.
 * And the **Systick** calls **ISR events** intermediately. 
@@ -549,6 +600,3 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 * We can see the menu which we create in Tera term.
 ![](https://i.imgur.com/zNseJhc.png)
 
-
-
- 
