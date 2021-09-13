@@ -229,6 +229,7 @@ static void task2_handler(void* parameters)
 
 }
 ```
+***
 * We can see **Task-1 and Task-2 messages** in context window.
 * And the **Systick** calls **ISR events** intermediately. 
 ![](https://i.imgur.com/rLP0veC.png)
