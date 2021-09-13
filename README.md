@@ -534,20 +534,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 * We can test the 2 tasks application as I mentioned above with Segger Systemview.
 * Because I am using STM32F407 DISC-1, I need FT232RL USB to UART TTL Serial Adapter.  
 ![](https://i.imgur.com/TkvXOCp.jpg)  
-* Connections   
+* Connections  
 ![](https://i.imgur.com/GPTAUyx.png)  
-<br>
-![](https://i.imgur.com/itNCCaY.png)  
-* If you don't have this port you should download the driver of USB dongle.  
-![](https://i.imgur.com/vhYxE5Z.png)  
-* Then run the application  
+![](https://i.imgur.com/Yr4ZeZT.png)
+* If you **don't have this port** you should download the driver of USB dongle.  
+![](https://i.imgur.com/JIQA53g.png)
+* Then run the application.  
 ```C=115
 static void task1_handler(void* parameters)
 {
-    /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
 
 
   //Enable the CYCCNT counter.
@@ -556,8 +553,6 @@ static void task1_handler(void* parameters)
   SEGGER_UART_init(250000);//500000
 
   SEGGER_SYSVIEW_Conf();
-
- // SEGGER_SYSVIEW_Start();
 
   status = xTaskCreate(task1_handler, "Task-1", 200, "Hello world from Task-1", 2, &task1_handle);
 
@@ -579,7 +574,6 @@ static void task1_handler(void* parameters)
 	}
 
 }
-
 
 static void task2_handler(void* parameters)
 {
