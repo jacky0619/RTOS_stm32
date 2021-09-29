@@ -153,10 +153,10 @@ static void task2_handler(void* parameters){
 [segger.com](https://www.segger.com/)
 * We can download segger systemview software here.
 ![](https://i.imgur.com/5rwYVE0.png)
-* **SystemView** is a software toolkit produced by SEGGER, which is used to **analyze the embedded software behaviour**.
+* **SystemView** is a software toolkit produced by SEGGER, which is used to **analyze the embedded software behavior**.
 * We can analyze **how many tasks are running** and how much **duration they are consuming on the CPU**.
-* We can also analyze other **behaviour of the tasks**, such as the task is **blocking, unblocking, notifying, yielding**, etc.
-* Also, we can can analyze **CPU idle time** and **total runtime behaviour** of the application.
+* We can also analyze other **behavior of the tasks**, such as the task is **blocking, unblocking, notifying, yielding**, etc.
+* Also, we can can analyze **CPU idle time** and **total runtime behavior** of the application.
 ---
 * There are **two visualization modes** in Segger Systemview.
 * One is called as **Real time recording** or that is also called as continuous recording. And the second one is **Single-shot recording**. 
